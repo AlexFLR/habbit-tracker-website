@@ -1,3 +1,37 @@
+{% extends "base.html" %}
 
 
-<h1>Hello World</h1>
+{% block title %} Home {% endblock %}
+
+
+{% block content%}
+
+	{% if user.is_authenticated%}
+
+		
+		 {% load static %}
+		  
+		 
+
+	{% else %}
+
+	<div class="card mx-auto mt-5 card border-secondary mb-3" style="width: 30rem;">
+
+		  {% load static %}
+		  <img src="{% static 'sussy_cat.jpg' %}" class="card-img-top" alt="Cat Img">
+		  <div class="card-body">
+		   	 <p class="card-text text-center"><strong>Holy guacamole! You are not logged in!</strong></p>
+		   	 <div class = "col text-center">
+		   	 <a class="btn btn-primary" href="{%url 'login'%}" role="button">Log In</a>
+		   	 </div>
+		  </div>
+	</div>
+	
+
+	{% endif %}
+
+
+
+
+
+{% endblock %}
