@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5">
+  <h2>Edit Habit</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="name" class="form-label">Habit Name</label>
+      <input type="text" class="form-control" id="name" name="name" value="{{ habit.habit_name }}" required>
+    </div>
+    <div class="mb-3">
+      <label for="frequency" class="form-label">Frequency</label>
+      <select class="form-select" id="frequency" name="frequency" required>
+        <option value="daily" {% if habit.frequency == 'daily' %}selected{% endif %}>Daily</option>
+        <option value="weekly" {% if habit.frequency == 'weekly' %}selected{% endif %}>Weekly</option>
+        <option value="monthly" {% if habit.frequency == 'monthly' %}selected{% endif %}>Monthly</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea class="form-control" id="description" name="description" rows="3">{{ habit.description }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{% url 'habits' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

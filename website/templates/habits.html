@@ -1,10 +1,164 @@
 {% extends "base.html" %}
+{% load static %}
+{% load dict_filters %}
+
+
+
+
+{% block extra_style %}
+
+
+<style>
+    body {
+        background-image: url("{% static 'images/bg_1.jpg' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        min-height: 100vh;
+    }
+</style>
+
+{% endblock %}
+
+
+
 
 
 {% block content %}
 
-<h1>Habits page</h1>
+<h1 class="text-center">Your habits</h1>
+</br>
+</br>
 
+
+
+
+
+<table class ="table table-hover">
+
+				<thead>
+						<tr>
+						<th scope="col">Name</th>
+						<th scope="col">Frequency</th>
+						<th scope="col">Description</th>
+						<th scope="col">Edit</th>
+						<th scope="col">Delete</th>
+						<th scope="col">Completed</th>
+
+						</tr>
+				</thead>
+
+
+
+				<tbody>
+				{% if habits %}
+					{% for habit in habits %}
+						<tr>
+						<td>{{habit.habit_name}}</td>
+						<td>{{habit.frequency}}</td>
+						<td>{{habit.description}}</td>
+						<td><a href="{% url 'edit_habit' habit.id %}" class="btn btn-sm btn-warning">Edit</a></td>
+			    	<td><form action="{% url 'delete_habit' habit.id %}" method="post" style="display:inline;">
+			        {% csrf_token %}
+			        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+			        <td>
+  <form action="{% url 'toggle_habit' habit.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm {% if completion_status|dict_get:habit.id %}btn-success{% else %}btn-outline-secondary{% endif %}">
+
+       {% if completion_status|dict_get:habit.id %}✔{% else %}✘{% endif %}
+
+    </button>
+  </form>
+</td>
+
+						</tr>
+							
+					{% endfor %}
+				{% endif %}
+	
+
+				</tbody>
+
+
+</table>
+
+</br>
+</br></br>
+</br></br>
+</br></br>
+
+
+<hr/>
+<h3>Toate obiceiurile tale</h3>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <form method="get" class="d-flex align-items-center gap-2 mb-0">
+    {{ filter.form.frequency.label_tag }}
+    {{ filter.form.frequency }}
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+  
+  <a class="btn btn-primary" href="{% url 'add_record' %}" role="button">New habit</a>
+</div>
+
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Nume</th>
+      <th>Frecvență</th>
+      <th>Descriere</th>
+      <th>Creat la</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for habit in all_habits %}
+    <tr>
+      <td>{{ habit.habit_name }}</td>
+      <td>{{ habit.frequency }}</td>
+      <td>{{ habit.description }}</td>
+      <td>{{ habit.created_at|date:"Y-m-d" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Nu ai niciun habit creat încă.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</br></br>
+</br></br>
+
+<hr/>
+<h3>Istoric obiceiuri (ultimele 7 zile)</h3>
+<table class="table table-bordered table-sm text-center">
+  <thead>
+    <tr>
+      <th>Habit</th>
+      {% for day in last_7_days %}
+        <th>{{ day|date:"D" }}<br>{{ day|date:"d M" }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for habit in all_habits %}
+    <tr>
+      <td>{{ habit.habit_name }}</td>
+      {% for day in last_7_days %}
+        <td>
+          {% if history|dict_get:habit.id|dict_get:day %}
+            ✔️
+          {% else %}
+            ✘
+          {% endif %}
+        </td>
+      {% endfor %}
+    </tr>
+    {% empty %}
+    <tr><td colspan="8">Nu ai niciun habit înregistrat.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 
 {% endblock %}

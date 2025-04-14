@@ -1,24 +1,104 @@
 {% extends "base.html" %}
-
+{% load static %}
 
 {% block title %} Home {% endblock %}
 
 
+{% block extra_style %}
+<style>
+    body {
+        background-image: url("{% static 'images/bg_3.jpg' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        min-height: 100vh;
+    }
+
+    .delayed-text {
+        opacity: 0;
+        animation: fadeIn 2s ease-in 1 forwards;
+        animation-delay: 1.s; 
+        text-align: center;
+        margin-top: 50px;
+        margin-bottom: 100px;
+
+        color: white; 
+
+    }
+
+    .card:focus-within,
+	.card:hover {
+	  box-shadow: 0 0 10px 4px rgba(255, 165, 0, 0.5); 
+	  border: 2px solid orange;
+	  transform: scale(1.02);
+	  transition: all 0.3s ease;
+	}
+
+	.card-row {
+	  display: flex;
+	  justify-content: space-between;
+	  gap: 2rem; 
+	  flex-wrap: wrap; 
+	  margin: 2rem auto;
+	  max-width: 100%;
+	}
+
+
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+    
+
+
+
 {% block content%}
+
 
 	{% if user.is_authenticated%}
 
-		
-		 {% load static %}
-		  
-		 
+ 	<div class="delayed-text pb-5">
+    <h2>
+        Welcome back, 
+        <span style="color: #4F46E5;">{{ user.first_name|default:user.username|title }}</span>.
+    </h2>
+    <h2>Every big change starts with one small habit. Ready to grow?</h2>
+</div>
 
+
+	<div class="card-row">
+
+		<div class="card" style="width: 20rem;">
+		  	<a href="{% url 'habits' %}" style="display: block; text-decoration: none; color: inherit;">
+		    <img class="card-img-top" src="{% static 'images/habit_1.png' %}" alt="Create or view your habits">
+
+		    <div class="card-body">
+		     	 <p class="card-text text-center">View your habits</p>
+		    </div>
+	  		</a>
+		</div>
+
+		<div class="card" style="width: 20rem;">
+		  	<a href="{% url 'analytics' %}" style="display: block; text-decoration: none; color: inherit;">
+		    <img class="card-img-top" src="{% static 'images/habit_3.jpg' %}" alt="Create or view your habits">
+
+		    <div class="card-body">
+		     	 <p class="card-text text-center">Analyze  your progress</p>
+		    </div>
+	  		</a>
+		</div>
+	</div>
+		 
 	{% else %}
 
 	<div class="card mx-auto mt-5 card border-secondary mb-3" style="width: 30rem;">
 
-		  {% load static %}
-		  <img src="{% static 'sussy_cat.jpg' %}" class="card-img-top" alt="Cat Img">
+		  
+		  <img src="{% static 'images/sussy_cat.jpg' %}" class="card-img-top" alt="Cat Img">
 		  <div class="card-body">
 		   	 <p class="card-text text-center"><strong>Holy guacamole! You are not logged in!</strong></p>
 		   	 <div class = "col text-center">
@@ -29,9 +109,5 @@
 	
 
 	{% endif %}
-
-
-
-
 
 {% endblock %}
