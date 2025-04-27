@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>🔎 Data Explorer - Choose the analysis</h2>
+
+  <form method="post" class="mt-4">
+    {% csrf_token %}
+
+    <!-- Coloana simpla -->
+    <div id="column-section" class="mb-3">
+      <label for="column" class="form-label">Choose a column</label>
+      <select class="form-select" name="column" id="column">
+        {% for col in columns %}
+          <option value="{{ col }}">{{ col }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Coloane X si Y -->
+    <div id="xy-section" class="mb-3" style="display: none;">
+      <label for="column_x" class="form-label">Column X:</label>
+      <select class="form-select mb-2" name="column_x" id="column_x">
+        {% for col in columns %}
+          <option value="{{ col }}">{{ col }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="column_y" class="form-label">Column Y:</label>
+      <select class="form-select" name="column_y" id="column_y">
+        {% for col in columns %}
+          <option value="{{ col }}">{{ col }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Tip de grafic -->
+    <div class="mb-3">
+      <label for="chart_type" class="form-label">Graphic type:</label>
+      <select class="form-select" name="chart_type" id="chart_type">
+        <option value="histogram">Histogram</option>
+        <option value="box">Box Plot</option>
+        <option value="scatter">Scatter Plot</option>
+      </select>
+    </div>
+
+    
+    <div id="bins-section" class="mb-3">
+      <label for="bins" class="form-label">Number of bins:</label>
+      <input type="number" name="bins" id="bins" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Generate Graphic</button>
+  </form>
+</div>
+
+<script>
+  const chartTypeSelect = document.getElementById('chart_type');
+  const columnSection = document.getElementById('column-section');
+  const xySection = document.getElementById('xy-section');
+  const binsSection = document.getElementById('bins-section');
+
+  function toggleFields() {
+    const chartType = chartTypeSelect.value;
+
+    if (chartType === 'scatter') {
+      xySection.style.display = 'block';
+      columnSection.style.display = 'none';
+      binsSection.style.display = 'none';
+    } else {
+      xySection.style.display = 'none';
+      columnSection.style.display = 'block';
+
+      if (chartType === 'histogram') {
+        binsSection.style.display = 'block';
+      } else {
+        binsSection.style.display = 'none';
+      }
+    }
+  }
+
+  chartTypeSelect.addEventListener('change', toggleFields);
+
+  
+  window.onload = toggleFields;
+</script>
+{% endblock %}

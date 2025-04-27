@@ -1,5 +1,123 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load dict_filters %}
+
+{% block extra_style %}
+<style>
+
+body {
+        background-image: url("{% static 'images/bg_6.jpg' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        min-height: 100vh;
+    }
+
+.github-heatmap {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  justify-content: center; 
+  padding: 20px 0; 
+}
+
+
+.week-column {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.day-block {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background-color: #ebedf0;
+  position: relative;
+}
+
+.day-block.level-1 { background-color: #c6f6d5; }
+.day-block.level-2 { background-color: #9ae6b4; }
+.day-block.level-3 { background-color: #68d391; }
+.day-block.level-4 { background-color: #48bb78; }
+.day-block.level-5 { background-color: #2f855a; }
+
+.day-block::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.day-block:hover::after {
+  opacity: 1;
+}
+
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  max-width: 400px;
+}
+.day {
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 4px;
+  background-color: #eee;
+}
+.day.level-1 { background-color: #c6f6d5; }
+.day.level-2 { background-color: #9ae6b4; }
+.day.level-3 { background-color: #68d391; }
+.day.level-4 { background-color: #48bb78; color: white; }
+.day.level-5 { background-color: #38a169; color: white; }
+.day.empty { background-color: transparent; }
+
+.day {
+  position: relative;
+  cursor: pointer;
+}
+.day::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.day:hover::after {
+  opacity: 1;
+}
+
+
+
+</style>
+{% endblock %}
+
+
+
 
 {% block content %}
 <div class="container mt-5">
@@ -8,9 +126,9 @@
   <!-- Form -->
   <form method="get" class="row g-3 mb-4">
     <div class="col-md-4">
-      <label for="habit" class="form-label">Alege habit-ul:</label>
+      <label for="habit" class="form-label">Choose the habit:</label>
       <select class="form-select" name="habit" id="habit">
-        <option value="">-- Toate habit-urile --</option> <!-- ✅ opțiune nouă -->
+        <option value="">All habits</option> 
         {% for habit in habits %}
           <option value="{{ habit.id }}" {% if habit.id|stringformat:"s" == selected_habit_id %}selected{% endif %}>
             {{ habit.habit_name }}
@@ -19,8 +137,10 @@
       </select>
     </div>
 
+
+
     <div class="col-md-3">
-      <label for="chart" class="form-label">Tipul graficului:</label>
+      <label for="chart" class="form-label">Graphic type:</label>
       <select class="form-select" name="chart" id="chart">
         <option value="bar" {% if chart_type == "bar" %}selected{% endif %}>Bar Chart</option>
         <option value="line" {% if chart_type == "line" %}selected{% endif %}>Line Chart</option>
@@ -29,17 +149,17 @@
     </div>
 
     <div class="col-md-2">
-      <label for="start_date" class="form-label">De la:</label>
+      <label for="start_date" class="form-label">From</label>
       <input type="date" class="form-control" name="start_date" value="{{ start_date }}">
     </div>
 
     <div class="col-md-2">
-      <label for="end_date" class="form-label">Până la:</label>
+      <label for="end_date" class="form-label">To</label>
       <input type="date" class="form-control" name="end_date" value="{{ end_date }}">
     </div>
 
     <div class="col-md-1 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100">Vezi</button>
+      <button type="submit" class="btn btn-primary w-100">Check</button>
     </div>
   </form>
 
@@ -49,7 +169,10 @@
   </div>
 </div>
 
-<!-- Chart.js -->
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const chartData = {{ chart_data|safe }};
@@ -94,4 +217,33 @@
 
   new Chart(ctx, config);
 </script>
+
+
+<hr class="my-5">
+<h4 class="mb-3">📅 Progress for {{ today|date:"Y" }}</h4>
+
+<div class="github-heatmap mb-5">
+  {% for week in calendar_weeks %}
+    <div class="week-column">
+      {% for day in week %}
+        {% if day.year == today.year %}
+          {% with date_str=day|date:"Y-m-d" %}
+            {% with count=heatmap_data|dict_get:date_str %}
+              {% with level=count|default:0 %}
+                <div 
+                  class="day-block level-{{ level|min:"5" }}" 
+                  data-tooltip="{{ count|default:0 }} habit{{ count|pluralize }} completed on {{ day|date:'d F Y' }}">
+                </div>
+              {% endwith %}
+            {% endwith %}
+          {% endwith %}
+        {% else %}
+          <div class="day-block empty"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+
+
 {% endblock %}
