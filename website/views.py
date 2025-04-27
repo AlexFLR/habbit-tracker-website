@@ -165,7 +165,7 @@ def analytics(request):
     selected_habit_id = request.GET.get('habit')
     chart_type = request.GET.get('chart', 'bar')
 
-    # perioada selectata
+    
     start_date_str = request.GET.get('start_date')
     end_date_str = request.GET.get('end_date')
     start_date = parse_date(start_date_str) if start_date_str else None
@@ -191,10 +191,10 @@ def analytics(request):
             'data': [log['completed_count'] for log in logs],
         }
 
-    # Heatmap GitHub-style pentru anul curent
+    
     today = date.today()
-    first_day = date(today.year, 1, 1)  # 1 ianuarie
-    last_day = date(today.year, 12, 31)  # 31 decembrie
+    first_day = date(today.year, 1, 1)  
+    last_day = date(today.year, 12, 31)  
 
 
     if selected_habit_id:
@@ -215,9 +215,9 @@ def analytics(request):
         log['date'].strftime('%Y-%m-%d'): log['count'] for log in heatmap_logs
     }
 
-    # Generam calendar_weeks pentru afisare
+    
     calendar_weeks = []
-    start = first_day - timedelta(days=first_day.weekday())  # începem de luni
+    start = first_day - timedelta(days=first_day.weekday())  
     end = last_day
     current = start
 
@@ -319,7 +319,7 @@ def dataexplorer_graph_view(request):
     if chart_type == 'histogram':
         column = options.get('column')
         bins = int(options.get('bins', 10))
-        fig = px.histogram(df, x=column, nbins=bins, title=f"Histogramă pentru {column}")
+        fig = px.histogram(df, x=column, nbins=bins, title=f"Histogram for {column}")
 
     elif chart_type == 'scatter':
         column_x = options.get('column_x')
@@ -333,10 +333,10 @@ def dataexplorer_graph_view(request):
 
     elif chart_type == 'box':
         column = options.get('column')
-        fig = px.box(df, y=column, title=f"Box plot pentru {column}")
+        fig = px.box(df, y=column, title=f"Box plot for {column}")
 
     if not fig:
-        return HttpResponse("Tip de grafic invalid.")
+        return HttpResponse("Invalid graphic.")
 
     graph_html = fig.to_html(full_html=False, default_height=600)
 
