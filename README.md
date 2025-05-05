@@ -20,6 +20,6 @@
 ![Analytics page screenshot](screenshots/analytics.png)
 
 ### Upload Page Workflow
-| **1. Upload your folder** | ![Upload 1](screenshots/Upload_1.png) |
-| **2. Choose the type of graph** | ![Upload 2](screenshots/Upload_2.png) |
-| **3. View the displayed graph** | ![Upload 3](screenshots/Upload_3.png) |
+ **1. Upload your folder**  ![Upload 1](screenshots/Upload_1.png) 
+ **2. Choose the type of graph**  ![Upload 2](screenshots/Upload_2.png) 
+ **3. View the displayed graph** ![Upload 3](screenshots/Upload_3.png) 
