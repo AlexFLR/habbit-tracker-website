@@ -43,7 +43,7 @@ def logout_user(request):
 def habits(request):
     today = date.today()
 
-    # Toate obiceiurile utilizatorului (fără filtru)
+   
     all_habits = list(Habit.objects.filter(user=request.user))
 
     # HabitFilter aplicat separat
@@ -58,13 +58,13 @@ def habits(request):
     history = {}
 
     for habit in all_habits:
-        # Istoric pe 7 zile
+       
         history[habit.id] = {}
         for day in last_7_days:
             log = HabitLog.objects.filter(habit=habit, date=day, completed=True).first()
             history[habit.id][day] = True if log else False
 
-        # Determinăm dacă habit-ul ar trebui să apară în secțiunea „Your habits”
+        
         show = True
         last_log = HabitLog.objects.filter(habit=habit, completed=True).order_by('-date').first()
 
@@ -82,8 +82,8 @@ def habits(request):
 
     context = {
         'habits': visible_habits,
-        'all_habits': all_habits,              # pentru heatmap
-        'filtered_habits': filtered_habits,    # pentru tabelul filtrabil
+        'all_habits': all_habits,             
+        'filtered_habits': filtered_habits,    
         'filter': habit_filter,
         'completion_status': completion_status,
         'last_7_days': last_7_days,
@@ -140,7 +140,7 @@ def toggle_habit_completion(request, habit_id):
         log.completed = not log.completed
         log.save()
 
-    # 🔥 Redirect curat, fără GET parameters
+    
     return redirect(reverse('habits'))
 
 
@@ -291,10 +291,10 @@ def dataexplorer_upload_view(request):
             for chunk in file.chunks():
                 destination.write(chunk)
 
-        # Citim fișierul cu pandas
+       
         df = pd.read_csv(file_path, sep=';')
 
-        # Salvăm dataframe-ul în sesiune ca JSON
+        
         request.session['dataexplorer_df'] = df.to_json()
 
         return redirect('dataexplorer_select')
