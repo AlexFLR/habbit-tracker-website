@@ -46,11 +46,11 @@ def habits(request):
    
     all_habits = list(Habit.objects.filter(user=request.user))
 
-    # HabitFilter aplicat separat
+    
     habit_filter = HabitFilter(request.GET, queryset=Habit.objects.filter(user=request.user))
     filtered_habits = habit_filter.qs
 
-    # Ultimele 7 zile
+    
     last_7_days = [today - timedelta(days=i) for i in range(6, -1, -1)]
 
     visible_habits = []
